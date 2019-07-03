@@ -7,7 +7,6 @@ from openpyxl import Workbook
 from openpyxl.styles import PatternFill, colors, Color
 from openpyxl.utils.cell import get_column_letter
 
-
 # parameters
 x_max = 250
 y_max = 250
@@ -89,10 +88,12 @@ pixels_y = l_y * cell_pixel_dim
 zoom_scale_x = int((default_x_zoom / pixels_x) * 100)
 zoom_scale_y = int((default_y_zoom / pixels_y) * 100)
 
-if zoom_scale_x < zoom_scale_y:
-    ws.sheet_view.zoomScale = zoom_scale_x
-else:
-    ws.sheet_view.zoomScale = zoom_scale_y
+# if zoom_scale_x < zoom_scale_y:
+#     ws.sheet_view.zoomScale = zoom_scale_x
+# else:
+#     ws.sheet_view.zoomScale = zoom_scale_y
+
+ws.sheet_view.zoomToFit
 
 # Output workbook
 wb.save("TEST.xlsx")
