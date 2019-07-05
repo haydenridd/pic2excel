@@ -21,7 +21,7 @@ parser.add_argument("--output_f", "-o", type=str, default="./ExcelImage.xlsx",
 parser.add_argument("--dimensions", "-d", type=int, nargs=2, default=[-1, -1],
                     help="Optionally specify image dimensions in pixels in format --dimensions Xdimension Ydimension."
                          " Maximum dimensions are 350 x 350. If not specified image will retain current dimensions"
-                         "or be truncated to obey maximum dimensions.")
+                         " or be truncated to obey maximum dimensions.")
 args = parser.parse_args()
 
 # constants
@@ -110,9 +110,6 @@ for row in range(0, l_x):
         sel_cell.fill = PatternFill(fill_type="solid", fgColor=cell_color)
 
     set_col_height = True
-
-# Add a " " to a cell at the bottom right corner to enable zoom to fit
-sel_cell = ws.cell(column=l_y+1, row=l_x+1, value=1)
 
 # Set zoom scale according to dimensions of photo
 pixels_x = l_x * cell_pixel_dim
