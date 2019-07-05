@@ -2,6 +2,7 @@
 from skimage import data, io
 from skimage.transform import rescale, resize
 from skimage.util import img_as_ubyte
+from skimage.color import rgba2rgb
 
 # Excel manipulation imports
 from openpyxl import Workbook
@@ -39,10 +40,14 @@ if args.input_image:
 else:
     input_image = data.astronaut()
 
+# if RGBA, convert to RGB with white background
+if input_image.shape[2] > 3:
+    input_image = rgba2rgb(input_image)
+
 # if dimensions are specified, resize image
 new_x, new_y = args.dimensions[0], args.dimensions[1]
 if new_x != -1 and new_y != -1:
-    input_image = resize(input_image, [new_x, new_y], anti_aliasing=True)
+    input_image = resize(input_image, [new_x, new_y], anti_aliasing=True, mode="constant")
 
 # Get X/Y dimensions of image
 l_x, l_y = input_image.shape[0], input_image.shape[1]
@@ -69,7 +74,7 @@ else:
 
 # Scale image
 if sf < 1:
-    input_image = img_as_ubyte(rescale(input_image, sf, anti_aliasing=True))
+    input_image = img_as_ubyte(rescale(input_image, sf, anti_aliasing=True, multichannel=True))
 else:
     input_image = img_as_ubyte(input_image)
 
@@ -93,20 +98,16 @@ for row in range(0, l_x):
         if not set_col_height:
             ws.column_dimensions[get_column_letter(col+1)].width = 0.83
 
-        # Determine RGB from image array, include opacity if it is in image
-        if input_image.shape[2] > 3:
-            cell_hex = "{:02X}".format(input_image[row, col, 3]) + "{:02X}".format(input_image[row, col, 0]) + \
-                       "{:02X}".format(input_image[row, col, 1]) + "{:02X}".format(input_image[row, col, 2])
-        else:
-            cell_hex = "{:02X}".format(input_image[row, col, 0]) + "{:02X}".format(input_image[row, col, 1]) \
-                       + "{:02X}".format(input_image[row, col, 2])
+        # Determine RGB from image array
+        cell_hex = "{:02X}".format(input_image[row, col, 0]) + "{:02X}".format(input_image[row, col, 1]) \
+                   + "{:02X}".format(input_image[row, col, 2])
 
-        # Set color using styles, Color takes ARGB hex input as AARRGGBB
+        # Set color using styles, Color takes ARGB hex input as AARRGGBB, or RGB hex input as RRGGBB
         cell_color = Color(cell_hex)
 
         # Set cell fill
         sel_cell = ws.cell(column=col+1, row=row+1) # , value=1
-        sel_cell.fill = PatternFill("solid", fgColor=cell_color)
+        sel_cell.fill = PatternFill(fill_type="solid", fgColor=cell_color)
 
     set_col_height = True
 
